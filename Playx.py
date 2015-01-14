@@ -14,6 +14,11 @@ class Playx:
 		self.fname = ""
 		self.request = req
 
+		if 'extensions' in vardic.keys():
+			self.extensions = vardic['extensions']
+		else:
+			self.extensions = []
+
 
 		fname = ""
 		dirList = self.dirList
@@ -22,19 +27,21 @@ class Playx:
 			for d in dirList:
 				lst = os.listdir(d)
 				for f in lst:
-					if self.isShortName(req, f):
-						files += [d + "/" + f]
+					fp = d + "/" + f
+					if self.isShortName(req, fp):
+						files += [fp]
 
 
 			if len(files) == 0:
 				fname = ""
 				break
 			elif len(files) == 1:
-				if os.path.isdir(fname):
-					dirList = [fname]
+				if os.path.isdir(files[0]):
+					dirList = [files[0]]
 					req = ""
 					continue
 				fname = files[0]
+				break
 
 			flgMatched = False
 			errMsg = ""
@@ -80,14 +87,19 @@ class Playx:
 			rc = call([self.player, fname])
 
 
-	def isShortName(self, sh, f):
-		# return True iff string sh is a short name of file f
+	def isShortName(self, sh, fname):
+		# return True iff string sh is a short name of file fname
 
 		sh = re.sub(r'[\s_]+', r' ', sh)
-		f = re.sub(r'[\s_]+', r' ', f)
-
+		f = re.sub(r'[\s_]+', r' ', fname)
+		
 		sh = sh.lower()
 		f = f.lower()
+
+		if os.path.isfile(fname) and re.search(r'[.]', f):
+			ext = re.sub(r'^.*[.]([a-z0-9]+)$', r'\1', f)
+			if ext not in self.extensions:
+				return False
 
 		if sh in f:
 			return True

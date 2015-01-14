@@ -12,4 +12,5 @@ fcfg = home + "/.playx.py"
 
 p = Playx(fcfg, args)
 
+print("playing `%s' with `%s'" % (p.fname, p.player))
 p.play()
