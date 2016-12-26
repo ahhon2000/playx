@@ -7,10 +7,18 @@ class Playx:
 		vardic = {}
 		exec(open(configFile).read(), vardic)
 
-		req = " ".join(args)
+		self.playerArgs = []
+
+		args2 = []
+		for a in args:
+			if a[0] == '-': self.playerArgs += [a]
+			else: args2 += [a]
+
+		req = " ".join(args2)
 
 		self.player = vardic['player']
-		self.dirList = vardic['dirList']
+		dirList = vardic['dirList']
+		self.dirList = dirList
 		self.fname = ""
 		self.request = req
 
@@ -19,35 +27,27 @@ class Playx:
 		else:
 			self.extensions = []
 
+		cand = []  # file candidates
+		home = os.path.abspath(os.getenv("HOME"))
+		for d0 in dirList:
+			if os.path.abspath(d0) == home: continue
 
-		fname = ""
-		dirList = self.dirList
-		while True:
-			files = []
-			for d in dirList:
-				lst = os.listdir(d)
-				for f in lst:
-					fp = d + "/" + f
+			for p, ds, fs in os.walk(d0):
+				for f in fs:
+					fp = "%s/%s" % (p, f)
 					if self.isShortName(req, fp):
-						files += [fp]
-
-
-			if len(files) == 0:
-				fname = ""
-				break
-			elif len(files) == 1:
-				if os.path.isdir(files[0]):
-					dirList = [files[0]]
-					req = ""
-					continue
-				fname = files[0]
-				break
-
+						cand += [fp]
+				
+		if len(cand) == 0:
+			fname = ""
+		elif len(cand) == 1:
+			fname = cand[0]
+		else:
 			flgMatched = False
 			errMsg = ""
 			while True:
-				for i in range(0, len(files)):
-					print("%-4d%s" % (i, files[i]))
+				for i in range(len(cand)):
+					print("%-4d%s" % (i, cand[i]))
 
 				if errMsg: print("*** %s" % errMsg)
 				print("\nwhich file do you want to apply `%s' to?" % self.player)
@@ -63,28 +63,21 @@ class Playx:
 					errMsg = "wrong index"
 
 				if flgMatched:
-					if os.path.isdir(files[i]):
-						flgMatched = False
-						dirList = [files[i]]
-						req = ""
-					else:
-						fname = files[i]
-
+					fname = cand[i]
 					break
-
-			if flgMatched: break
 
 		self.fname = fname
 
 
 	def play(self):
-		cid = os.fork()
+		#cid = os.fork()
 		fname = self.fname
 
 		if not fname: raise Exception("no file matches `%s'" % self.request)
 
-		if not cid:
-			rc = call([self.player, fname])
+		#if not cid:
+		cmd = [self.player] + self.playerArgs + [fname]
+		rc = call(cmd)
 
 
 	def isShortName(self, sh, fname):
@@ -93,8 +86,8 @@ class Playx:
 		sh = re.sub(r'[\s_]+', r' ', sh)
 		f = re.sub(r'[\s_]+', r' ', fname)
 		
-		sh = sh.lower()
-		f = f.lower()
+		sh = sh.lower().strip()
+		f = f.lower().strip()
 
 		if os.path.isfile(fname) and re.search(r'[.]', f):
 			ext = re.sub(r'^.*[.]([a-z0-9]+)$', r'\1', f)
