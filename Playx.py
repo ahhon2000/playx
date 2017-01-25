@@ -47,13 +47,13 @@ class Playx:
 			errMsg = ""
 			while True:
 				for i in range(len(cand)):
-					print("%-4d%s" % (i, cand[i]))
+					print("%-4d%s" % (i+1, cand[i]))
 
 				if errMsg: print("*** %s" % errMsg)
 				print("\nwhich file do you want to apply `%s' to?" % self.player)
 				try:
 					s = input("> ")
-					i = int(s)
+					i = int(s) - 1
 					flgMatched = True
 				except EOFError:
 					raise Exception("user aborted")
