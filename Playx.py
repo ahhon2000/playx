@@ -1,6 +1,18 @@
 from subprocess import call
 import os
 import re
+from os.path import samefile
+
+def hasFile(cand, f):
+	"""Return True iff file f is on list cand
+
+	Absolute path is used for comparison, while f may be relative or abs.
+	"""
+
+	for ff in cand:
+		if samefile(f, ff): return True
+
+	return False
 
 class Playx:
 	def __init__(self, configFile, args):
@@ -35,7 +47,8 @@ class Playx:
 			for p, ds, fs in os.walk(d0):
 				for f in fs:
 					fp = "%s/%s" % (p, f)
-					if self.isShortName(req, fp):
+					if self.isShortName(req, fp)  and\
+					not hasFile(cand, fp):
 						cand += [fp]
 				
 		if len(cand) == 0:
