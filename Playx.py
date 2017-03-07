@@ -26,13 +26,11 @@ class Playx:
 			if a[0] == '-': self.playerArgs += [a]
 			else: args2 += [a]
 
-		req = " ".join(args2)
-
 		self.player = vardic['player']
 		dirList = vardic['dirList']
 		self.dirList = dirList
 		self.fname = ""
-		self.request = req
+		self.request = args2
 
 		if 'extensions' in vardic.keys():
 			self.extensions = vardic['extensions']
@@ -47,7 +45,7 @@ class Playx:
 			for p, ds, fs in os.walk(d0):
 				for f in fs:
 					fp = "%s/%s" % (p, f)
-					if self.isShortName(req, fp)  and\
+					if self.isShortName(fp)  and\
 					not hasFile(cand, fp):
 						cand += [fp]
 				
@@ -93,21 +91,21 @@ class Playx:
 		rc = call(cmd)
 
 
-	def isShortName(self, sh, fname):
-		# return True iff string sh is a short name of file fname
-
-		sh = re.sub(r'[\s_]+', r' ', sh)
-		f = re.sub(r'[\s_]+', r' ', fname)
+	def isShortName(self, fname):
+		# return True iff request is a short name of file fname
 		
-		sh = sh.lower().strip()
-		f = f.lower().strip()
-
-		if os.path.isfile(fname) and re.search(r'[.]', f):
+		f = fname.lower().strip()
+		if os.path.isfile(fname)  and  '.' in f:
 			ext = re.sub(r'^.*[.]([a-z0-9]+)$', r'\1', f)
 			if ext not in self.extensions:
 				return False
 
-		if sh in f:
-			return True
-		else:
-			return False
+		req = self.request
+		for s in req:
+			s = s.strip().lower()
+			if s not in f: return False
+
+			i0 = f.index(s) + len(s)
+			f = f[i0:]
+
+		return True
