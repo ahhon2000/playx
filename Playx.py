@@ -54,6 +54,7 @@ class Playx:
 		elif len(cand) == 1:
 			fname = cand[0]
 		else:
+			cand.sort()
 			flgMatched = False
 			errMsg = ""
 			while True:
