@@ -15,7 +15,10 @@ def hasFile(cand, f):
 	return False
 
 class Playx:
-	def __init__(self, configFile, args):
+	def __init__(self, configFile, args,
+		onlyUnderDir = "",
+	):
+
 		vardic = {}
 		exec(open(configFile).read(), vardic)
 
@@ -28,6 +31,10 @@ class Playx:
 
 		self.player = vardic['player']
 		dirList = vardic['dirList']
+		print("debug onlyUnder = ", onlyUnderDir)
+		if onlyUnderDir:
+			dirList = [onlyUnderDir]
+
 		self.dirList = dirList
 		self.fname = ""
 		self.request = args2
