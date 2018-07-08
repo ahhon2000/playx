@@ -31,7 +31,6 @@ class Playx:
 
 		self.player = vardic['player']
 		dirList = vardic['dirList']
-		print("debug onlyUnder = ", onlyUnderDir)
 		if onlyUnderDir:
 			dirList = [onlyUnderDir]
 
