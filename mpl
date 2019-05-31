@@ -13,12 +13,12 @@ if [ $# -ne 0 ] && [  "$1" = "-3d" ]; then
 	if [ $useOldMplayerOptions -ne 0 ] && [ "$player" = mplayer ]; then
 		$player  -vo gl:stereo=3  --af=volnorm=1:1 "$@"
 	else
-		$player  -vo gl:stereo=3 "$@"
+		$player  -af volnorm=1:1 -vo gl:stereo=3 "$@"
 	fi
 else
 	if [ $useOldMplayerOptions -ne 0 ] && [ "$player" = mplayer ]; then
 		$player --af=volnorm=1:1 "$@"
 	else
-		$player "$@"
+		$player -af volnorm=1:1 "$@"
 	fi
 fi
